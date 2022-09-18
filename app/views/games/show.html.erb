@@ -11,17 +11,25 @@
 
       <div class="row">
         <% @game_question.variants.each do |letter, variant| %>
-          <div class="col-md-6 buffer-top">
-            <%= link_to content_tag(:span, letter.upcase, class: 'variant') + ": #{variant}",
-                        answer_game_path(@game, letter: letter),
-                        method: :put,
-                        class: 'btn btn-block btn-default btn-variant'
-            %>
-          </div>
+          <% help = @game_question.help_hash %>
+          <% if !help.key?(:fifty_fifty) || help[:fifty_fifty].include?(letter) %>
+            <div class="col-md-6 buffer-top">
+              <%= link_to content_tag(:span, letter.upcase, class: 'variant') + ": #{variant}",
+                          answer_game_path(@game, letter: letter),
+                          method: :put,
+                          class: 'btn btn-block btn-default btn-variant'
+              %>
+            </div>
+          <% end %>
         <% end %>
       </div>
     </div>
+
+    <div class="buffer-top-lg">
+      <%= render partial: 'help', object: @game_question.help_hash, locals: {game: @game} %>
+    </div>
   </div>
+
 
   <div class="col-sm-3 col-sm-pull-9">
     <ul class="list-group list-group-prizes game-prizes">
