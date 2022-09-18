@@ -19,7 +19,6 @@ RSpec.describe GamesController, type: :controller do
 
   # группа тестов для незалогиненного юзера (Анонимус)
   context 'Anon' do
-    # из экшена show анона посылаем
     it 'kick from #show' do
       # вызываем экшен
       get :show, id: game_w_questions.id
@@ -30,7 +29,7 @@ RSpec.describe GamesController, type: :controller do
     end
 
     it 'kick from #create' do
-      get :create, id: game_w_questions.id
+      expect { post :create }.not_to change { Game.count }
 
       expect(response.status).not_to eq(200)
       expect(response).to redirect_to(new_user_session_path)
@@ -38,7 +37,7 @@ RSpec.describe GamesController, type: :controller do
     end
 
     it 'kick from #answer' do
-      get :answer, id: game_w_questions.id
+      put :answer, id: game_w_questions.id
 
       expect(response.status).not_to eq(200)
       expect(response).to redirect_to(new_user_session_path)
@@ -46,7 +45,7 @@ RSpec.describe GamesController, type: :controller do
     end
 
     it 'kick from #take_money' do
-      get :take_money, id: game_w_questions.id
+      put :take_money, id: game_w_questions.id
 
       expect(response.status).not_to eq(200)
       expect(response).to redirect_to(new_user_session_path)
@@ -54,7 +53,7 @@ RSpec.describe GamesController, type: :controller do
     end
 
     it 'kick from #help' do
-      get :help, id: game_w_questions.id
+      put :help, id: game_w_questions.id
 
       expect(response.status).not_to eq(200)
       expect(response).to redirect_to(new_user_session_path)
