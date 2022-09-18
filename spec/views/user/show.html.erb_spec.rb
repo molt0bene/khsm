@@ -22,7 +22,7 @@ RSpec.describe 'users/show', type: :view do
   it 'not renders others passwd' do
     allow(controller).to receive(:current_user).and_return(nil)
     render
-    expect(rendered).to match('Сменить имя и пароль')
+    expect(rendered).not_to match('Сменить имя и пароль')
   end
 
   it 'renders games' do
