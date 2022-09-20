@@ -16,16 +16,22 @@ RSpec.describe 'users/show', type: :view do
   it 'renders own passwd' do
     allow(controller).to receive(:current_user).and_return(user)
     render
+
     expect(rendered).to have_link('Сменить имя и пароль')
   end
 
   it 'not renders others passwd' do
     allow(controller).to receive(:current_user).and_return(nil)
     render
-    expect(rendered).not_to match('Сменить имя и пароль')
+
+    expect(rendered).to_not have_link('Сменить имя и пароль', exact: true)
   end
 
   it 'renders games' do
+    assign(:games, [FactoryBot.build_stubbed(:game)])
+    stub_template 'users/_game.html.erb' => 'user game is here'
+    render
 
+    expect(rendered).to match /user game is here/
   end
 end
