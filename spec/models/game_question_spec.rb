@@ -70,6 +70,19 @@ RSpec.describe GameQuestion, type: :model do
     expect(ff.size).to eq 2 # всего должно остаться 2 варианта
   end
 
+  it 'correct friend_call' do
+    # в подсказках пока нет нужного ключа
+    expect(game_question.help_hash).not_to include(:friend_call)
+    # вызовем подсказку
+    game_question.add_friend_call
+
+    # проверим создание подсказки
+    expect(game_question.help_hash).to include(:friend_call)
+    fc = game_question.help_hash[:friend_call]
+
+    expect(fc).to include('B') # должен содержаться правильный вариант в строке
+  end
+
   context 'user helpers' do
     it 'correct audience_help' do
       expect(game_question.help_hash).not_to include(:audience_help)
