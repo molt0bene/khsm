@@ -38,50 +38,53 @@ RSpec.describe GameQuestion, type: :model do
   # }
   #
   #
-  it 'correct .help_hash' do
-    # на фабрике у нас изначально хэш пустой
-    expect(game_question.help_hash).to eq({})
 
-    # добавляем пару ключей
-    game_question.help_hash[:some_key1] = '1'
-    game_question.help_hash[:some_key2] = '2'
+  context 'help_hash'
+    it 'correct .help_hash' do
+      # на фабрике у нас изначально хэш пустой
+      expect(game_question.help_hash).to eq({})
 
-    # сохраняем модель и ожидаем сохранения хорошего
-    expect(game_question.save).to be_truthy
+      # добавляем пару ключей
+      game_question.help_hash[:some_key1] = '1'
+      game_question.help_hash[:some_key2] = '2'
 
-    # загрузим этот же вопрос из базы для чистоты эксперимента
-    gq = GameQuestion.find(game_question.id)
+      # сохраняем модель и ожидаем сохранения хорошего
+      expect(game_question.save).to be_truthy
 
-    # проверяем новые значение хэша
-    expect(gq.help_hash).to eq({some_key1: '1', some_key2: '2'})
-  end
+      # загрузим этот же вопрос из базы для чистоты эксперимента
+      gq = GameQuestion.find(game_question.id)
 
-  it 'correct fifty_fifty' do
-    # сначала убедимся, в подсказках пока нет нужного ключа
-    expect(game_question.help_hash).not_to include(:fifty_fifty)
-    # вызовем подсказку
-    game_question.add_fifty_fifty
+      # проверяем новые значение хэша
+      expect(gq.help_hash).to eq({some_key1: '1', some_key2: '2'})
+    end
 
-    # проверим создание подсказки
-    expect(game_question.help_hash).to include(:fifty_fifty)
-    ff = game_question.help_hash[:fifty_fifty]
 
-    expect(ff).to include('b') # должен остаться правильный вариант
-    expect(ff.size).to eq 2 # всего должно остаться 2 варианта
-  end
+    it 'correct fifty_fifty' do
+      # сначала убедимся, в подсказках пока нет нужного ключа
+      expect(game_question.help_hash).not_to include(:fifty_fifty)
+      # вызовем подсказку
+      game_question.add_fifty_fifty
 
-  it 'correct friend_call' do
-    # в подсказках пока нет нужного ключа
-    expect(game_question.help_hash).not_to include(:friend_call)
-    # вызовем подсказку
-    game_question.add_friend_call
+      # проверим создание подсказки
+      expect(game_question.help_hash).to include(:fifty_fifty)
+      ff = game_question.help_hash[:fifty_fifty]
 
-    # проверим создание подсказки
-    expect(game_question.help_hash).to include(:friend_call)
-    fc = game_question.help_hash[:friend_call]
+      expect(ff).to include('b') # должен остаться правильный вариант
+      expect(ff.size).to eq 2 # всего должно остаться 2 варианта
+    end
 
-    expect(fc).to include('B') # должен содержаться правильный вариант в строке
-  end
+    it 'correct friend_call' do
+      # в подсказках пока нет нужного ключа
+      expect(game_question.help_hash).not_to include(:friend_call)
+      # вызовем подсказку
+      game_question.add_friend_call
+
+      # проверим создание подсказки
+      expect(game_question.help_hash).to include(:friend_call)
+      fc = game_question.help_hash[:friend_call]
+
+      expect(fc).to include('считает, что') # должен содержаться правильный вариант в строке
+    end
 
   context 'user helpers' do
     it 'correct audience_help' do
