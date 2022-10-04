@@ -74,4 +74,19 @@ RSpec.describe Game, type: :model do
       expect(game_w_questions.finished?).to be_falsey
     end
   end
+
+  describe '#current_game_question' do
+    it 'shows current question' do
+      q = game_w_questions.current_game_question
+      expect(q).to be
+      expect(q.question.level).to eq(game_w_questions.current_level)
+    end
+  end
+
+  describe '#previous_level' do
+    it 'shows valid previous level' do
+      curr_level = game_w_questions.current_level
+      expect(game_w_questions.previous_level).to eq(curr_level - 1)
+    end
+  end
 end
