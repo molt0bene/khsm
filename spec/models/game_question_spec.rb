@@ -13,7 +13,7 @@ RSpec.describe GameQuestion, type: :model do
   end
 
   # Группа тестов на игровое состояние объекта вопроса
-  context 'game status' do
+  describe 'game status' do
     # Тест на правильную генерацию хэша с вариантами
     it 'correct .variants' do
       expect(game_question.variants).to eq(
@@ -30,7 +30,7 @@ RSpec.describe GameQuestion, type: :model do
     end
   end
 
-  context 'help_hash'
+  describe 'help_hash'
     it 'correct .help_hash' do
       # на фабрике у нас изначально хэш пустой
       expect(game_question.help_hash).to eq({})
@@ -77,7 +77,7 @@ RSpec.describe GameQuestion, type: :model do
       expect(fc).to include('считает, что')
     end
 
-  context 'user helpers' do
+  describe 'user helpers' do
     it 'correct audience_help' do
       expect(game_question.help_hash).not_to include(:audience_help)
 
