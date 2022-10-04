@@ -30,15 +30,6 @@ RSpec.describe GameQuestion, type: :model do
     end
   end
 
-  # help_hash у нас имеет такой формат:
-  # {
-  #   fifty_fifty: ['a', 'b'], # При использовании подсказски остались варианты a и b
-  #   audience_help: {'a' => 42, 'c' => 37 ...}, # Распределение голосов по вариантам a, b, c, d
-  #   friend_call: 'Василий Петрович считает, что правильный ответ A'
-  # }
-  #
-  #
-
   context 'help_hash'
     it 'correct .help_hash' do
       # на фабрике у нас изначально хэш пустой
@@ -83,7 +74,7 @@ RSpec.describe GameQuestion, type: :model do
       expect(game_question.help_hash).to include(:friend_call)
       fc = game_question.help_hash[:friend_call]
 
-      expect(fc).to include('считает, что') # должен содержаться правильный вариант в строке
+      expect(fc).to include('считает, что')
     end
 
   context 'user helpers' do
