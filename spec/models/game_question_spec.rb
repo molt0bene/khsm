@@ -89,4 +89,18 @@ RSpec.describe GameQuestion, type: :model do
       expect(ah.keys).to contain_exactly('a', 'b', 'c', 'd')
     end
   end
+
+  describe '#correct_answer_key'  do
+    let(:ans_key) do
+      game_question.correct_answer_key
+    end
+
+    it 'lies in range of a..d' do
+      expect(%w[a b c d]).to include(ans_key)
+    end
+
+    it 'is a key for answer1' do
+      expect(ans_key).to eq('b')
+    end
+  end
 end

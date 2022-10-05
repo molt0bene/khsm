@@ -45,7 +45,7 @@ class GameQuestion < ActiveRecord::Base
   end
 
   def correct_answer_key
-    {a => 'a', b => 'b', c => 'c', d => 'd'}[1]
+    {a => 'a', b => 'b', c => 'c', d => 'd'}[1]     # считаем, что answer1 всегда правильный при создании
   end
 
   def correct_answer
