@@ -77,16 +77,16 @@ RSpec.describe Game, type: :model do
 
   describe '#current_game_question' do
     it 'shows current question' do
-      q = game_w_questions.current_game_question
-      expect(q).to be
-      expect(q.question.level).to eq(game_w_questions.current_level)
+      question = game_w_questions.current_game_question
+      expect(question).to be
+      expect(question).to eq(game_w_questions.game_questions.first) # поскольку игра в фабрике создается с level = 0,
+                                                                    # значит берем первый вопрос
     end
   end
 
   describe '#previous_level' do
     it 'shows valid previous level' do
-      curr_level = game_w_questions.current_level
-      expect(game_w_questions.previous_level).to eq(curr_level - 1)
+      expect(game_w_questions.previous_level).to eq(game_w_questions.current_level - 1)
     end
   end
 end
