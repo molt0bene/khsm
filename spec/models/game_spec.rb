@@ -52,29 +52,6 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  # Тесты на основную игровую логику
-  describe 'game mechanics' do
-    # Правильный ответ должен продолжать игру
-    it 'correct answer continues game' do
-      # Текущий уровень игры и статус
-      level = game_w_questions.current_level
-      q = game_w_questions.current_game_question
-      expect(game_w_questions.status).to eq(:in_progress)
-
-      game_w_questions.answer_current_question!(q.correct_answer_key)
-
-      # Перешли на след. уровень
-      expect(game_w_questions.current_level).to eq(level + 1)
-
-      # Ранее текущий вопрос стал предыдущим
-      expect(game_w_questions.current_game_question).not_to eq(q)
-
-      # Игра продолжается
-      expect(game_w_questions.status).to eq(:in_progress)
-      expect(game_w_questions.finished?).to be_falsey
-    end
-  end
-
   describe '#current_game_question' do
     it 'shows current question' do
       question = game_w_questions.current_game_question
@@ -87,6 +64,78 @@ RSpec.describe Game, type: :model do
   describe '#previous_level' do
     it 'shows valid previous level' do
       expect(game_w_questions.previous_level).to eq(game_w_questions.current_level - 1)
+    end
+  end
+
+  describe '#answer_current_question!' do
+    context 'answer is correct' do
+      context 'question is not the last' do
+        before(:each) do
+          @level = game_w_questions.current_level
+          @question = game_w_questions.current_game_question
+          game_w_questions.answer_current_question!(@question.correct_answer_key)
+        end
+
+        it 'should go to next level' do
+          expect(game_w_questions.current_level).to eq(@level + 1)
+        end
+
+        it 'should show next question' do
+          expect(game_w_questions.current_game_question).not_to eq(@question)
+        end
+
+        it 'should not change game status' do
+          expect(game_w_questions.status).to eq(:in_progress)
+          expect(game_w_questions.finished?).to be_falsey
+        end
+      end
+
+      context 'question is the last' do
+        before(:each) do
+          game_w_questions.current_level = Question::QUESTION_LEVELS.max
+          @question = game_w_questions.current_game_question
+          game_w_questions.answer_current_question!(@question.correct_answer_key)
+        end
+
+        it 'should finish game' do
+          expect(game_w_questions.status).to eq(:won)
+          expect(game_w_questions.finished?).to be_truthy
+        end
+      end
+    end
+
+    context 'answer is incorrect' do
+      before(:each) do
+        @level = game_w_questions.current_level
+        @question = game_w_questions.current_game_question
+        game_w_questions.answer_current_question!('c') # incorrect key
+      end
+
+      it 'should finish game' do
+        expect(game_w_questions.status).to eq(:fail)
+        expect(game_w_questions.finished?).to be_truthy
+      end
+
+      it 'should give away fireproof money' do
+        expect(user.balance).to eq(game_w_questions.prize)
+      end
+    end
+
+    context 'answer was given after time was out' do
+      before(:each) do
+        game_w_questions.created_at = Time.now - 36.minutes
+      end
+
+      it 'should return false' do
+        expect(game_w_questions.answer_current_question!('a')).to eq false
+      end
+
+      it 'should finish with status :timeout' do
+        game_w_questions.answer_current_question!('a')
+        
+        expect(game_w_questions.status).to eq(:timeout)
+        expect(game_w_questions.finished?).to be_truthy
+      end
     end
   end
 end
