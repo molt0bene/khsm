@@ -18,51 +18,61 @@ RSpec.describe GamesController, type: :controller do
   let(:game_w_questions) { FactoryBot.create(:game_with_questions, user: user) }
 
   # группа тестов для незалогиненного юзера (Анонимус)
-  context 'Anon' do
-    it 'kick from #show' do
-      # вызываем экшен
-      get :show, id: game_w_questions.id
-      # проверяем ответ
-      expect(response.status).not_to eq(200) # статус не 200 ОК
-      expect(response).to redirect_to(new_user_session_path) # devise должен отправить на логин
-      expect(flash[:alert]).to be # во flash должен быть прописана ошибка
+  describe 'anonymous user' do
+    context 'tries to go to #show' do
+      it 'should not be allowed' do
+        # вызываем экшен
+        get :show, id: game_w_questions.id
+        # проверяем ответ
+        expect(response.status).not_to eq(200) # статус не 200 ОК
+        expect(response).to redirect_to(new_user_session_path) # devise должен отправить на логин
+        expect(flash[:alert]).to be # во flash должен быть прописана ошибка
+      end
     end
 
-    it 'kick from #create' do
-      expect { post :create }.not_to change { Game.count }
+    context 'tries to go to #create' do
+      it 'should not be allowed' do
+        expect { post :create }.not_to change { Game.count }
 
-      expect(response.status).not_to eq(200)
-      expect(response).to redirect_to(new_user_session_path)
-      expect(flash[:alert]).to be
+        expect(response.status).not_to eq(200)
+        expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to be
+      end
     end
 
-    it 'kick from #answer' do
-      put :answer, id: game_w_questions.id
+    context 'tries to go to #answer' do
+      it 'should not be allowed' do
+        put :answer, id: game_w_questions.id
 
-      expect(response.status).not_to eq(200)
-      expect(response).to redirect_to(new_user_session_path)
-      expect(flash[:alert]).to be
+        expect(response.status).not_to eq(200)
+        expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to be
+      end
     end
 
-    it 'kick from #take_money' do
-      put :take_money, id: game_w_questions.id
+    context 'tries to go to #take_money' do
+      it 'should not be allowed' do
+        put :take_money, id: game_w_questions.id
 
-      expect(response.status).not_to eq(200)
-      expect(response).to redirect_to(new_user_session_path)
-      expect(flash[:alert]).to be
+        expect(response.status).not_to eq(200)
+        expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to be
+      end
     end
 
-    it 'kick from #help' do
-      put :help, id: game_w_questions.id
+    context 'tries to go to #help' do
+      it 'should not be allowed' do
+        put :help, id: game_w_questions.id
 
-      expect(response.status).not_to eq(200)
-      expect(response).to redirect_to(new_user_session_path)
-      expect(flash[:alert]).to be
+        expect(response.status).not_to eq(200)
+        expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to be
+      end
     end
   end
 
   # группа тестов на экшены контроллера, доступных залогиненным юзерам
-  context 'Usual user' do
+  describe 'Usual user' do
     # перед каждым тестом в группе
     before(:each) { sign_in user } # логиним юзера user с помощью спец. Devise метода sign_in
 
