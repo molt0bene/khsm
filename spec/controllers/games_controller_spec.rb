@@ -133,17 +133,25 @@ RSpec.describe GamesController, type: :controller do
     # юзер отвечает на игру корректно - игра продолжается
     describe '#answer' do
       context 'answer is correct' do
-        # передаем параметр params[:letter]
-        before(:each) do
-          put :answer, id: game_w_questions.id, letter: game_w_questions.current_game_question.correct_answer_key
-          @game = assigns(:game)
-        end
-
         it 'should continue game' do
-          expect(@game.finished?).to be_falsey
-          expect(@game.current_level).to be > 0
-          expect(response).to redirect_to(game_path(@game))
+          put :answer, id: game_w_questions.id, letter: game_w_questions.current_game_question.correct_answer_key
+          game = assigns(:game)
+
+          expect(game.finished?).to be_falsey
+          expect(game.current_level).to be > 0
+          expect(response).to redirect_to(game_path(game))
           expect(flash.empty?).to be_truthy # удачный ответ не заполняет flash
+        end
+      end
+
+      context 'answer is incorrect' do
+        it 'should finish game' do
+          put :answer, id: game_w_questions.id, letter: 'c' # неправильный ответ
+          game = assigns(:game)
+
+          expect(game.finished?).to be_truthy
+          expect(response).to redirect_to(user_path(user))
+          expect(flash[:alert]).to be
         end
       end
     end
