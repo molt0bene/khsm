@@ -70,50 +70,53 @@ RSpec.describe Game, type: :model do
   describe '#answer_current_question!' do
     context 'answer is correct' do
       context 'question is not the last' do
-        before(:each) do
-          @level = game_w_questions.current_level
-          @question = game_w_questions.current_game_question
-          game_w_questions.answer_current_question!(@question.correct_answer_key)
+        let! (:level) { game_w_questions.current_level }
+        let (:question) { game_w_questions.current_game_question }
+
+        before do
+          game_w_questions.answer_current_question!(question.correct_answer_key)
         end
 
         it 'should go to next level' do
-          expect(game_w_questions.current_level).to eq(@level + 1)
+          expect(game_w_questions.current_level).to eq(level + 1)
         end
 
         it 'should show next question' do
-          expect(game_w_questions.current_game_question).not_to eq(@question)
+          expect(game_w_questions.current_game_question).not_to eq(question)
         end
 
         it 'should not change game status' do
           expect(game_w_questions.status).to eq(:in_progress)
-          expect(game_w_questions.finished?).to be_falsey
+          expect(game_w_questions.finished?).to eq false
         end
       end
 
       context 'question is the last' do
-        before(:each) do
+        let (:question) { game_w_questions.current_game_question }
+
+        before do
           game_w_questions.current_level = Question::QUESTION_LEVELS.max
-          @question = game_w_questions.current_game_question
-          game_w_questions.answer_current_question!(@question.correct_answer_key)
+          game_w_questions.answer_current_question!(question.correct_answer_key)
         end
 
         it 'should finish game' do
           expect(game_w_questions.status).to eq(:won)
-          expect(game_w_questions.finished?).to be_truthy
+          expect(game_w_questions.finished?).to eq true
         end
       end
     end
 
     context 'answer is incorrect' do
-      before(:each) do
-        @level = game_w_questions.current_level
-        @question = game_w_questions.current_game_question
+      let (:level) { game_w_questions.current_level }
+      let (:question) { game_w_questions.current_game_question }
+
+      before do
         game_w_questions.answer_current_question!('c') # incorrect key
       end
 
       it 'should finish game' do
         expect(game_w_questions.status).to eq(:fail)
-        expect(game_w_questions.finished?).to be_truthy
+        expect(game_w_questions.finished?).to eq true
       end
 
       it 'should give away fireproof money' do
@@ -123,7 +126,7 @@ RSpec.describe Game, type: :model do
 
     context 'answer was given after time was out' do
       before(:each) do
-        game_w_questions.created_at = Time.now - 36.minutes
+        game_w_questions.created_at = 36.minutes.ago
       end
 
       it 'should return false' do
@@ -134,7 +137,7 @@ RSpec.describe Game, type: :model do
         game_w_questions.answer_current_question!('a')
         
         expect(game_w_questions.status).to eq(:timeout)
-        expect(game_w_questions.finished?).to be_truthy
+        expect(game_w_questions.finished?).to eq true
       end
     end
   end
